@@ -16,16 +16,18 @@ public class TestStream {
 		env.enableCheckpointing(5000);
 
 		KafkaSource<String> source = KafkaSource.<String>builder()
-  		  .setBootstrapServers("clouderaprodnode1.infra.alephys.com:9093")
-    		  .setTopics("test-topic")
+  		  .setBootstrapServers("kundanatest1.infra.alephys.com:9091")
+    		  .setTopics("transaction")
    	       	  .setGroupId("my-test-group")
                   .setStartingOffsets(OffsetsInitializer.earliest())
                   .setValueOnlyDeserializer(new SimpleStringSchema())
-                  .setProperty("security.protocol", "SASL_SSL")
+                  .setProperty("security.protocol", "SSL")
                   .setProperty("ssl.truststore.location", "/var/ssl/private/kafka_broker.truststore.jks")
                   .setProperty("ssl.truststore.password", "confluenttruststorepass")
-                  .setProperty("sasl.mechanism", "SCRAM-SHA-512")
-                  .setProperty("sasl.jaas.config", "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"admin\" password=\"admin-secret\";")
+                  .setProperty("ssl.keystore.location", "/var/ssl/private/kafka_broker.keystore.jks")
+				  .setProperty("ssl.keystore.password", "confluentkeystorestorepass")
+				  .setProperty("ssl.key.password", "confluentkeystorestorepass")
+				  .setProperty("ssl.endpoint.identification.algorithm", "")
 		  .build();
 
 
