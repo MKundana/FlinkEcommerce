@@ -6,6 +6,7 @@ kinit ldapusername
 
 To build the package:
 
+cd sai/FlinkCommerce
 mvn clean package
 
 flink run -m yarn-cluster   -Dclassloader.resolve-order=parent-last   -c FlinkCommerce.TestStream   target/FlinkCommerce-1.0-SNAPSHOT.jar
