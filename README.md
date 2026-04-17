@@ -86,7 +86,10 @@ hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
 -  To build the package:
 
 cd sai/FlinkCommerce
-mvn clean package
+
+`mvn clean package`
+
+- To run the program
 ```
 flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
 ```
