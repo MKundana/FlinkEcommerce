@@ -141,11 +141,18 @@ kundanatest1 node
 
 cat /etc/kafka/client.properties
 
+
+
 security.protocol=SSL
+
 ssl.key.password=confluentkeystorestorepass
+
 ssl.keystore.location=/var/ssl/private/kafka_broker.keystore.jks
+
 ssl.keystore.password=confluentkeystorestorepass
+
 ssl.truststore.location=/var/ssl/private/kafka_broker.truststore.jks
+
 ssl.truststore.password=confluenttruststorepass
 
 cd /usr/bin/
