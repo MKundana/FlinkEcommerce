@@ -96,14 +96,14 @@ flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.pr
 
 -  To list the jobs
 
-flink List
+`flink List`
 
 ------------------ Running/Restarting Jobs -------------------
 17.04.2026 02:58:02 : 34a01a7c1ecdab8fbf4a1e397b20daf2 : Kafka-to-HDFS (RUNNING)
 
 -  To stop the Job with savepoint
 
-flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2
+``` flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2 ```
 
 Suspending job "34a01a7c1ecdab8fbf4a1e397b20daf2" with a CANONICAL savepoint.
 Triggering stop-with-savepoint for job 34a01a7c1ecdab8fbf4a1e397b20daf2.
@@ -120,18 +120,18 @@ flink run -m yarn-cluster   -s hdfs:///user/kundana/savepoints/savepoint-34a01a-
 
 - To list the files whether data is being written or not
 
-hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02
+``` hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02 ```
 
 - To see the data in the files
 
-hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20
+``` hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20 ```
 
 ****************************************************************************************
 
 
 # To kill the application:
 
-yarn application -kill application_1775521765514_0002
+``` yarn application -kill application_1775521765514_0002 ```
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ ssl.truststore.location=/var/ssl/private/kafka_broker.truststore.jks
 ssl.truststore.password=confluenttruststorepass
 
 cd /usr/bin/
-./kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction
+``` ./kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction ```
 
 -------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -157,7 +157,7 @@ cd /usr/bin/
 # To produce the messages 
 kundanatest4 node
 
-python3.11 kafka_producer_sasl.py
+``` python3.11 kafka_producer_sasl.py ```
 
 
 
