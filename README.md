@@ -69,24 +69,27 @@ Add these to `/etc/flink/conf/flink-conf.yaml` to avoid typing them every time:
 
 To verify if your Kerberos principal has the correct permissions to write to HDFS, you should perform a manual "Simulated Test" on the cluster command line.
 
-# 1. Clear any old tickets
+1. Clear any old tickets
 kdestroy
 
-# 2. Authenticate using your keytab
+2. Authenticate using your keytab
 kinit -kt kundana.keytab kundana@ALEPHYS.COM
 
-# 3. Try to create a dummy file in your target HDFS directory
+3. Try to create a dummy file in your target HDFS directory
 hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
 
 
 ********************************************************************************
 
+# To run the Program
+
 -  To build the package:
 
 cd sai/FlinkCommerce
 mvn clean package
-
+```
 flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
+```
 
 -  To list the jobs
 
@@ -107,7 +110,9 @@ Savepoint completed. Path: hdfs://ns1/user/kundana/savepoints/savepoint-34a01a-3
 
 -  To run from Savepoint
 
+```
 flink run -m yarn-cluster   -s hdfs:///user/kundana/savepoints/savepoint-34a01a-364b1f084c77   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
+```
 
 
 - To list the files whether data is being written or not
