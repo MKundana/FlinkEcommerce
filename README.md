@@ -149,6 +149,7 @@ ssl.truststore.location=/var/ssl/private/kafka_broker.truststore.jks
 ssl.truststore.password=confluenttruststorepass
 
 cd /usr/bin/
+
 ``` ./kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction ```
 
 -------------------------------------------------------------------------------------------------------------------------------------------
