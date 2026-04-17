@@ -81,21 +81,21 @@ hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
 
 ********************************************************************************
 
-# To build the package:
+-  To build the package:
 
 cd sai/FlinkCommerce
 mvn clean package
 
 flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
 
-# To list the jobs
+-  To list the jobs
 
 flink List
 
 ------------------ Running/Restarting Jobs -------------------
 17.04.2026 02:58:02 : 34a01a7c1ecdab8fbf4a1e397b20daf2 : Kafka-to-HDFS (RUNNING)
 
-# To stop the Job with savepoint
+-  To stop the Job with savepoint
 
 flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2
 
@@ -105,18 +105,18 @@ Waiting for response...
 Savepoint completed. Path: hdfs://ns1/user/kundana/savepoints/savepoint-34a01a-364b1f084c77
 
 
-# To run from Savepoint
+-  To run from Savepoint
 
 flink run -m yarn-cluster   -s hdfs:///user/kundana/savepoints/savepoint-34a01a-364b1f084c77   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
 
 
-To list the files whether data is being written or not
+- To list the files whether data is being written or not
 
-# hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02
+hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02
 
-To see the data in the files
+- To see the data in the files
 
-# hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20
+hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20
 
 ****************************************************************************************
 
