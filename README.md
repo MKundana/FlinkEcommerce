@@ -21,13 +21,24 @@ yarn application -kill application_1775521765514_0002
 (219)
 cat /etc/kafka/client.properties
 
+
 security.protocol=SSL
+
 ssl.key.password=confluentkeystorestorepass
+
 ssl.keystore.location=/var/ssl/private/kafka_broker.keystore.jks
+
 ssl.keystore.password=confluentkeystorestorepass
+
 ssl.truststore.location=/var/ssl/private/kafka_broker.truststore.jks
+
 ssl.truststore.password=confluenttruststorepass
 
+
+To create Topic
+kafka-topics --bootstrap-server kundanatest1.infra.alephys.com:9091 --command-config /etc/kafka/client.properties  --create --topic transaction --config retention.ms=1800000
+
+ 
 To consume the messages
 kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction
 
