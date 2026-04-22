@@ -33,6 +33,11 @@ flink run -d -m yarn-cluster \
 
 ```
 
+
+Example:
+
+flink run -d -c FlinkCommerce.trans1 -m yarn-cluster -yD security.kerberos.login.principal=kundana@ALEPHYS.COM -yD security.kerberos.login.keytab=/root/kundana.keytab -yt /root/kundana.keytab target/FlinkCommerce-1.0-SNAPSHOT.jar
+
 ---
 
 3. Key Parameters Explained
