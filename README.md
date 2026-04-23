@@ -150,4 +150,7 @@ python3.11 kafka_producer_sasl.py
 
 
 
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.18.0.8-1.0.1.el8.x86_64
 
+
+export PATH=$JAVA_HOME/bin:$PATH
