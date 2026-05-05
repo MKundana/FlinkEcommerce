@@ -112,8 +112,14 @@ cd sai/FlinkCommerce
 ``` flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2 ```
 
 Suspending job "34a01a7c1ecdab8fbf4a1e397b20daf2" with a CANONICAL savepoint.
+
+
 Triggering stop-with-savepoint for job 34a01a7c1ecdab8fbf4a1e397b20daf2.
+
+
 Waiting for response...
+
+
 Savepoint completed. Path: hdfs://ns1/user/kundana/savepoints/savepoint-34a01a-364b1f084c77
 
 
