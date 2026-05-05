@@ -33,7 +33,11 @@ flink run -d -m yarn-cluster \
 
 ```
 
-``` flink run -m yarn-cluster -d  -yD security.kerberos.login.principal=kundana@ALEPHYS.COM  -yD security.kerberos.login.keytab=/root/kundana.keytab  -yjm 1024m -ytm 1024m  -c FlinkCommerce.trans1  target/FlinkCommerce-1.0-SNAPSHOT.jar ```
+```
+
+flink run -m yarn-cluster -d  -yD security.kerberos.login.principal=kundana@ALEPHYS.COM  -yD security.kerberos.login.keytab=/root/kundana.keytab  -yjm 1024m -ytm 1024m  -c FlinkCommerce.trans1  target/FlinkCommerce-1.0-SNAPSHOT.jar
+
+ ```
 
 ---
 
