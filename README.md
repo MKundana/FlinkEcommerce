@@ -71,11 +71,14 @@ Add these to `/etc/flink/conf/flink-conf.yaml` to avoid typing them every time:
 
 To verify if your Kerberos principal has the correct permissions to write to HDFS, you should perform a manual "Simulated Test" on the cluster command line.
 
+
 1. Clear any old tickets
-kdestroy
+
+``` kdestroy ```
 
 2. Authenticate using your keytab
-``` kinit -kt kundana.keytab kundana@ALEPHYS.COM o create a dummy file in your target HDFS directory
+``` kinit -kt kundana.keytab kundana@ALEPHYS.COM o create a dummy file in your target HDFS directory ```
+
 hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
 
 
