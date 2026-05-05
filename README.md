@@ -1,7 +1,7 @@
 # Flink
 
 Kerberos Keytab & Flink YARN Configuration Guide
-1. Generating a Valid Keytab (The Admin Way)
+## 1. Generating a Valid Keytab (The Admin Way)
 
 If you have admin access, always generate the keytab on the KDC/LDAP node to ensure the Salt and KVNO are perfect.
 
@@ -13,7 +13,7 @@ If you have admin access, always generate the keytab on the KDC/LDAP node to ens
 
 ---
 
-2. Flink Launch Command (Production Ready)
+## 2. Flink Launch Command (Production Ready)
 
 Use these parameters to ensure the job runs long-term without credential expiry.
 
