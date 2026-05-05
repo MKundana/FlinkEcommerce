@@ -1,7 +1,7 @@
 # Flink
 
 Kerberos Keytab & Flink YARN Configuration Guide
-1. Generating a Valid Keytab (The Admin Way)
+## 1. Generating a Valid Keytab (The Admin Way)
 
 If you have admin access, always generate the keytab on the KDC/LDAP node to ensure the Salt and KVNO are perfect.
 
@@ -13,7 +13,7 @@ If you have admin access, always generate the keytab on the KDC/LDAP node to ens
 
 ---
 
-2. Flink Launch Command (Production Ready)
+## 2. Flink Launch Command (Production Ready)
 
 Use these parameters to ensure the job runs long-term without credential expiry.
 
@@ -33,9 +33,15 @@ flink run -d -m yarn-cluster \
 
 ```
 
+```
+
+flink run -m yarn-cluster -d  -yD security.kerberos.login.principal=kundana@ALEPHYS.COM  -yD security.kerberos.login.keytab=/root/kundana.keytab  -yjm 1024m -ytm 1024m  -c FlinkCommerce.trans1  target/FlinkCommerce-1.0-SNAPSHOT.jar
+
+ ```
+
 ---
 
-3. Key Parameters Explained
+## 3. Key Parameters Explained
 
 • `security.kerberos.login.keytab`: The "Passport" file for authentication.
 
@@ -45,7 +51,7 @@ flink run -d -m yarn-cluster \
 
 ---
 
-4. Permanent Configuration (`flink-conf.yaml`)
+## 4. Permanent Configuration (`flink-conf.yaml`)
 
 Add these to `/etc/flink/conf/flink-conf.yaml` to avoid typing them every time:
 
@@ -59,7 +65,7 @@ Add these to `/etc/flink/conf/flink-conf.yaml` to avoid typing them every time:
 
 ---
 
-5. Troubleshooting Lockouts
+## 5. Troubleshooting Lockouts
 
 • Error: "Client's credentials have been revoked" -> Account is Locked.
 
@@ -69,85 +75,108 @@ Add these to `/etc/flink/conf/flink-conf.yaml` to avoid typing them every time:
 
 To verify if your Kerberos principal has the correct permissions to write to HDFS, you should perform a manual "Simulated Test" on the cluster command line.
 
+
 1. Clear any old tickets
-# kdestroy
+
+``` kdestroy ```
 
 2. Authenticate using your keytab
-# kinit -kt kundana.keytab kundana@ALEPHYS.COM
+``` kinit -kt kundana.keytab kundana@ALEPHYS.COM o create a dummy file in your target HDFS directory ```
 
-3. Try to create a dummy file in your target HDFS directory
-# hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
+hadoop fs -touchz /user/kundana/transaction_data/test_connection.txt
 
 
 ********************************************************************************
 
-To build the package:
+## To build the package:
 
 cd sai/FlinkCommerce
-mvn clean package
 
-flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
+## To build Package:
 
-# flink List
+``` mvn clean package ```
+
+## To run the flink job 
+
+``` flink run -m yarn-cluster   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar ```
+
+## To list the flink running jobs
+
+``` flink list ```
 
 ------------------ Running/Restarting Jobs -------------------
-17.04.2026 02:58:02 : 34a01a7c1ecdab8fbf4a1e397b20daf2 : Kafka-to-HDFS (RUNNING)
+17.04.2026 02:58:02 : 34a01a7c1ecdab8fbf4a1e397b20daf2 : Kafka-to-Kafka (RUNNING)
 
-# flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2
+## To stop the running job with savepoint
+
+``` flink stop --savepointPath hdfs:///user/kundana/savepoints 34a01a7c1ecdab8fbf4a1e397b20daf2 ```
 
 Suspending job "34a01a7c1ecdab8fbf4a1e397b20daf2" with a CANONICAL savepoint.
+
+
 Triggering stop-with-savepoint for job 34a01a7c1ecdab8fbf4a1e397b20daf2.
+
+
 Waiting for response...
+
+
 Savepoint completed. Path: hdfs://ns1/user/kundana/savepoints/savepoint-34a01a-364b1f084c77
 
 
-To run from Savepoint
+## To run from Savepoint
 
-# flink run -m yarn-cluster   -s hdfs:///user/kundana/savepoints/savepoint-34a01a-364b1f084c77   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar
+``` flink run -m yarn-cluster   -s hdfs:///user/kundana/savepoints/savepoint-34a01a-364b1f084c77   -c FlinkCommerce.test   -Dsecurity.kerberos.login.principal=kundana@ALEPHYS.COM   -Dsecurity.kerberos.login.keytab=/tmp/kundana.keytab   -Djobmanager.memory.process.size=2048m   -Dtaskmanager.memory.process.size=2048m   -Dtaskmanager.numberOfTaskSlots=1   target/FlinkCommerce-1.0-SNAPSHOT.jar ```
 
 
-To list the files whether data is being written or not
+## To list the files whether data is being written or not
 
-# hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02
+``` hdfs dfs -ls -R /user/kundana/transaction_data/2026-04-17--02 ```
 
-To see the data in the files
+## To see the data in the files
 
-# hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20
+``` hdfs dfs -cat /user/kundana/transaction_data/2026-04-17--02/part-b36df530-5600-4ac6-aa17-d178ee7c4c40-0 | head -n 20 ```
 
 ****************************************************************************************
 
 
-To kill the application:
+## To kill the application:
 
-yarn application -kill application_1775521765514_0002
+``` yarn application -kill application_1775521765514_0002 ```
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 kundanatest1 node
 
-To consume the messages
+## To consume the messages
 
 cat /etc/kafka/client.properties
 
 security.protocol=SSL
+
 ssl.key.password=confluentkeystorestorepass
+
 ssl.keystore.location=/var/ssl/private/kafka_broker.keystore.jks
+
 ssl.keystore.password=confluentkeystorestorepass
+
 ssl.truststore.location=/var/ssl/private/kafka_broker.truststore.jks
-ssl.truststore.password=confluenttruststorepass
+
+ssl.truststore.password=confluenttruststorepass 
 
 cd /usr/bin/
-./kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction
+
+``` ./kafka-console-consumer --bootstrap-server kundanatest1.infra.alephys.com:9091 --consumer.config /etc/kafka/client.properties --topic transaction ```
 
 -------------------------------------------------------------------------------------------------------------------------------------------
 
 kundanatest4 node
 
-To produce the messages 
+## To produce the messages 
 
-python3.11 kafka_producer_sasl.py
-
-
+``` python3.11 kafka_producer_sasl.py ```
 
 
+
+``` export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.18.0.8-1.0.1.el8.x86_64 ```
+``` export PATH=$JAVA_HOME/bin:$PATH ```
