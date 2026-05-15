@@ -12,6 +12,17 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
 import java.sql.Timestamp;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import java.sql.Timestamp;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 
 public class trans1 {
     public static void main(String[] args) throws Exception {
@@ -41,8 +52,35 @@ public class trans1 {
             
         DataStream<Transaction> map2=map1.filter(value-> value.totalAmount>1000);
         
-        DataStream<Transaction> map3=map2.keyBy(value-> value.name).window(TumblingProcessingTimeWindows.of(Duration.ofSeconds(10))).sum("productQuantity");
+        //DataStream<Transaction> map3=map2.keyBy(value-> value.name).window(TumblingProcessingTimeWindows.of(Duration.ofSeconds(10))).sum("productQuantity");
 
+        final OutputTag<Transaction> creditcard=new OutputTag<Transaction>("creditcard"){};
+        final OutputTag<Transaction> debitcard=new OutputTag<Transaction>("debitcard"){};
+
+        SingleOutputStreamOperator<Transaction> mainstream= map2.process( new ProcessFunction<Transaction, Transaction>()
+        {
+            @Override
+            public void processElement(Transaction value , Context ctx , Collector<Transaction> out)
+            {
+                if (value.paymentMethod.equalsIgnoreCase("credit_card"))
+                {
+                    ctx.output(creditcard,value);
+                }
+                else if (value.paymentMethod.equalsIgnoreCase("debit_card"))
+                {
+                    ctx.output(debitcard,value);
+                }
+                else
+                {
+                    out.collect(value);
+                }
+            }
+        });
+
+        DataStream<Transaction> creditcardStream=mainstream.getSideOutput(creditcard);
+        DataStream<Transaction> debitcardStream=mainstream.getSideOutput(debitcard);
+
+        
         KafkaSink<String> sink =KafkaSink.<String>builder()
                     .setBootstrapServers("10.1.0.248:9091")
                     .setProperty("security.protocol", "SSL")
@@ -53,13 +91,48 @@ public class trans1 {
                     .setProperty("ssl.keystore.password", "confluentkeystorestorepass")
                     .setProperty("ssl.key.password", "confluentkeystorestorepass")
                     .setRecordSerializer(KafkaRecordSerializationSchema.builder()
-                        .setTopic("test-topic-flink")
+                        .setTopic("online")
                         .setValueSerializationSchema(new SimpleStringSchema())
                         .build())
                     .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                     .build();
 
-       map3.map(value -> value.toString()).sinkTo(sink);
+        KafkaSink<String> sink2 =KafkaSink.<String>builder()
+                    .setBootstrapServers("10.1.0.248:9091")
+                    .setProperty("security.protocol", "SSL")
+                    .setProperty("ssl.truststore.location", "/var/ssl/private/kafka_broker.truststore.jks")
+                    .setProperty("ssl.truststore.password", "confluenttruststorepass")
+                    .setProperty("ssl.endpoint.identification.algorithm", "")
+                    .setProperty("ssl.keystore.location", "/var/ssl/private/kafka_broker.keystore.jks")
+                    .setProperty("ssl.keystore.password", "confluentkeystorestorepass")
+                    .setProperty("ssl.key.password", "confluentkeystorestorepass")
+                    .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                        .setTopic("creditcard")
+                        .setValueSerializationSchema(new SimpleStringSchema())
+                        .build())
+                    .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                    .build();
+
+        KafkaSink<String> sink3 =KafkaSink.<String>builder()
+                    .setBootstrapServers("10.1.0.248:9091")
+                    .setProperty("security.protocol", "SSL")
+                    .setProperty("ssl.truststore.location", "/var/ssl/private/kafka_broker.truststore.jks")
+                    .setProperty("ssl.truststore.password", "confluenttruststorepass")
+                    .setProperty("ssl.endpoint.identification.algorithm", "")
+                    .setProperty("ssl.keystore.location", "/var/ssl/private/kafka_broker.keystore.jks")
+                    .setProperty("ssl.keystore.password", "confluentkeystorestorepass")
+                    .setProperty("ssl.key.password", "confluentkeystorestorepass")
+                    .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                        .setTopic("debitcard")
+                        .setValueSerializationSchema(new SimpleStringSchema())
+                        .build())
+                    .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                    .build();
+
+       mainstream.map(value -> value.toString()).sinkTo(sink);
+       creditcardStream.map(value-> value.toString()).sinkTo(sink2);
+       debitcardStream.map(value-> value.toString()).sinkTo(sink3);
+      
 
        env.execute("filter and keyBy transformation");
 
