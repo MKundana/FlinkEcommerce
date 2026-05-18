@@ -25,7 +25,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 public class trans2 {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        env.setParallelism(2);
         env.enableCheckpointing(10000);
         env.getCheckpointConfig().setCheckpointStorage("hdfs:///user/flink/checkpoints");
         
@@ -44,13 +44,38 @@ public class trans2 {
                     .setValueOnlyDeserializer(new SimpleStringSchema())
                     .build();
 
-        DataStream <String> sourcestream= env.fromSource(source,WatermarkStrategy.noWatermarks(),"kafka source");
+        DataStream <String> sourcestream= env.fromSource(source,WatermarkStrategy.noWatermarks(),"kafka source")
+            .filter(value -> value != null && !value.trim().isEmpty());
 
         DataStream<Transaction> map1= sourcestream.map(new Splitter());
             
-        DataStream<Transaction> map2=map1.filter(value-> value.totalAmount>1000);
+        //DataStream<Transaction> map2=map1.filter(value-> value.totalAmount>1000);
         
- 
+        OutputTag<Transaction> rejectTag=new OutputTag<Transaction>("Rejected-transactions"){};
+
+        SingleOutputStreamOperator<Transaction> mainstream=map1.process(new ProcessFunction<Transaction, Transaction>(){
+
+            @Override
+            public void processElement(Transaction value, Context ctx, Collector<Transaction> out) {
+              try{
+                if (value.totalAmount <0){
+                    ctx.output(rejectTag,value);
+                }
+                else{
+                 out.collect(value); 
+                }
+              } 
+              catch(Exception e){
+                ctx.output(rejectTag,value);
+              }  
+            }
+        });
+
+        DataStream<Transaction> rejectedstream = mainstream.getSideOutput(rejectTag);
+
+        rejectedstream.addSink(new EmailSink());
+        rejectedstream.print();
+        
 
         KafkaSink<Transaction> sink=KafkaSink.<Transaction>builder()
                     .setBootstrapServers("10.1.0.248:9091")
@@ -82,7 +107,7 @@ public class trans2 {
                     .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                     .build();
 
-       map2.sinkTo(sink);
+       mainstream.sinkTo(sink);
 
        env.execute("sending data to three different topics");
 
