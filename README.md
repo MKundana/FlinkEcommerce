@@ -39,12 +39,22 @@ flink run -m yarn-cluster -d  -yD security.kerberos.login.principal=kundana@ALEP
 
  ```
 
-## To rin flink job in application mode
+## To submit flink job to that particular queue in yarn 
+```
+
+ flink run -m yarn-cluster -d   -yD security.kerberos.login.principal=kundana@ALEPHYS.COM   -yD yarn.application.queue=TeamA   -yD security.kerberos.login.keytab=/root/kundana.keytab   -yjm 1024m -ytm 1024m   -c FlinkCommerce.trans2   target/FlinkCommerce-1.0-SNAPSHOT.jar
+
+```
+
+## To run flink job in application mode
 ```
 
  flink run-application -target yarn-application -d  -yD security.kerberos.login.principal=kundana@ALEPHYS.COM  -yD security.kerberos.login.keytab=/root/kundana.keytab  -yjm 1024m -ytm 1024m  -c FlinkCommerce.trans1  target/FlinkCommerce-1.0-SNAPSHOT.jar
 
 ```
+
+
+
 ---
 
 ## 3. Key Parameters Explained
