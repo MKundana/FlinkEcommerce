@@ -20,7 +20,6 @@ public class DataStreamJob {
             "CREATE CATALOG iceberg_cat WITH (" +
             "  'type'='iceberg'," +
             "  'catalog-type'='hadoop'," +
-            //"  'hive.metastore.uris'='thrift://clouderaprodnode5.infra.alephys.com:9083'," +
             "  'warehouse'='hdfs://ns1/user/kundana/iceberg'," +
             "  'hadoop.conf.dir'='/etc/hadoop/conf'" +
             ")"

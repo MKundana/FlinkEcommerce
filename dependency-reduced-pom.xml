@@ -10,8 +10,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <release>${java.version}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -27,7 +26,7 @@
               <finalName>${project.artifactId}-${project.version}</finalName>
               <transformers>
                 <transformer>
-                  <mainClass>com.iceberg.test.DataStreamJob</mainClass>
+                  <mainClass>com.iceberg.test.IcebergHiveCatalogTest</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -36,6 +35,15 @@
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>cloudera</id>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.apache.flink</groupId>
@@ -61,10 +69,27 @@
       <version>3.1.1</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-connector-hive_2.12</artifactId>
+      <version>1.20.1-csa1.15.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hive</groupId>
+      <artifactId>hive-exec</artifactId>
+      <version>3.1.3000.7.3.1.0-197</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hive</groupId>
+      <artifactId>hive-metastore</artifactId>
+      <version>3.1.3000.7.3.1.0-197</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <properties>
     <java.version>11</java.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <flink.version>1.20.1</flink.version>
   </properties>
 </project>

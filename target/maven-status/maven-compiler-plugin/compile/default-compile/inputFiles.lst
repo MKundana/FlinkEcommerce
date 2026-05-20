@@ -1,1 +1,3 @@
+/root/iceberg-flink-job/src/main/java/com/iceberg/test/HiveCatalogTest.java
 /root/iceberg-flink-job/src/main/java/com/iceberg/test/DataStreamJob.java
+/root/iceberg-flink-job/src/main/java/com/iceberg/test/IcebergHiveCatalogTest.java

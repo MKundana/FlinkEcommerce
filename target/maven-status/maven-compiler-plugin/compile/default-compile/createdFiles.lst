@@ -1,1 +1,3 @@
 com/iceberg/test/DataStreamJob.class
+com/iceberg/test/IcebergHiveCatalogTest.class
+com/iceberg/test/HiveCatalogTest.class
